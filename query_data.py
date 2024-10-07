@@ -1,20 +1,21 @@
 import argparse
-from langchain.vectorstores.chroma import Chroma
+from langchain_chroma import Chroma
 from langchain.prompts import ChatPromptTemplate
-from langchain_community.llms.ollama import Ollama
+from langchain_google_genai import GoogleGenerativeAI
 
 from get_embedding_function import get_embedding_function
 
 CHROMA_PATH = "chroma"
 
 PROMPT_TEMPLATE = """
-Answer the question based only on the following context:
+Ты — продвинутый библиотечный помощник. Используя предоставленный контекст, ответь на вопрос пользователя. 
+Если информация не найдена в контексте, честно сообщи об этом. Обязательно включи ссылку на источник из метаданных в ответе.
 
 {context}
 
 ---
 
-Answer the question based on the above context: {question}
+Вопрос: {question}
 """
 
 
@@ -40,7 +41,7 @@ def query_rag(query_text: str):
     prompt = prompt_template.format(context=context_text, question=query_text)
     # print(prompt)
 
-    model = Ollama(model="mistral")
+    model = GoogleGenerativeAI(model="gemini-1.5-flash")
     response_text = model.invoke(prompt)
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
